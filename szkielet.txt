@@ -1,3 +1,8 @@
+    1. Placement phase + Custom board size
+    2. Shooting phase
+    4. Turn limit
+    5. AI can play
+
     def default_setup()
         board_size = 5  # Default board size
         turn_limit = 50  # Default turn limit
@@ -6,58 +11,84 @@
         player_2_board = []  # Player 2's board
         player_1_ships = []  # Player 1's ships
         player_2_ships = []  # Player 2's ships
+1
+def assigning_ship_field_number():
+(5x5) - 6 pola zapelnione
+(6x6) - 8
+(7x7) - 10
+(8x8) - 12
+(9x9) - 14
+(10x10) - 16 pol zapelnionych
 
+-
     def play_game():
         setup_game()
-
+-
     def setup_game():
         get_board_size()
         get_turn_limit()
-
+2
+    def display_board(player):
+        # Display the board for a player
+        pass
+3
     def get_board_size():
         # Ask the user for the board size
         pass
-
+4
     def get_turn_limit():
         # Ask the user for the turn limit
         pass
-
+5
     def placement_phase(board, ships):
         # Implement the placement phase
+        while
         pass
-
-    def shooting_phase():
-        # Implement the shooting phase
-        pass
-
+6
     def check_valid_input(row, col):
         # Check if the input is valid
         pass
-
+7
     def check_ships_distance(board, row, col, direction, ship_size):
         # Check if ships are too close
         pass
 
+8
+    def shooting_phase():
+        # Implement the shooting phase
+The game asks for a row (as a letter) and a column (as a number) as user input for shooting.
+
+        pass
+9
     def update_board(board, row, col, result):
         # Update the board after each shot
         pass
-
+10
     def check_win_condition():
         # Check if a player has won
         pass
 
-    def display_board(player):
-        # Display the board for a player
+11
+def display_message
+Hitting, missing and sinking ship (parts) results in displaying as message, such as You've hit a ship!, You've missed!, and You've sunk a ship! respectively.
+pass
+
+12
+    def changing_turns(message):
+        # Display messages during the game -
+        After one player is finished with the placement phase,
+        a waiting screen is displayed with no boards,
+        with the Next player's placement phase message
+        When pressing any button on the waiting screen,
+        the second player's placement phase begins.
         pass
 
-    def display_message(message):
-        # Display messages during the game
-        pass
 
+-
     def single_player_mode():
         # Implement single player mode
         pass
-
+-
     def multiplayer_mode():
         # Implement multiplayer mode
         pass
