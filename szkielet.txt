@@ -1,3 +1,10 @@
+10x10: 4x1-masztowiec; 3x2-masztowiec; 2x3-masztowiec; 1x4-masztowiec
+9x9: 4x1-masztowiec; 3x2-masztowiec; 1x3-masztowiec; 1x4-masztowiec
+8x8: 4x1-masztowiec; 3x2-masztowiec; 2x3-masztowiec
+7x7: 4x1-masztowiec; 2x2-masztowiec; 2x3-masztowiec
+6x6: 4x1-masztowiec; 3x2-masztowiec; 1x3-masztowiec
+5x5: 4x1-masztowiec; 2x2-masztowiec; 1x3-masztowiec
+
     1. Placement phase + Custom board size
     2. Shooting phase
     4. Turn limit
