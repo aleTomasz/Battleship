@@ -45,67 +45,94 @@ def print_board(board):
     print()
 
 
-def hit_the_ship(board, row, column):
-    pass
+
 def check_win(board,board_size):
     for i in range(board_size):
         for j in range(board_size):
             if board[i][j]=='X':
-                return 1
+                return 0
     print("You win")
-    return 0
+    return 1
 
-def check_sink(board,hit_row,hit_column,board_size):
-    if board[hit_row+1][hit_column]=='X' or board[hit_row-1][hit_column]=='X' or board[hit_row][hit_column+1]=='X' or board[hit_row][hit_column-1]=='X':
+def check_sink(player_board,opponent_board, hit_row, hit_column, board_size):
+    if opponent_board[hit_row + 1][hit_column]== 'X' or opponent_board[hit_row - 1][hit_column]== 'X' or opponent_board[hit_row][hit_column + 1]== 'X' or opponent_board[hit_row][hit_column - 1]== 'X':
         return
-    if board[hit_row+1][hit_column]=='H' or board[hit_row-1][hit_column]=='H' :
-        while board[hit_row][hit_column]=='H' and hit_row!=0:
+    if opponent_board[hit_row + 1][hit_column]== 'H' or opponent_board[hit_row - 1][hit_column]== 'H' :
+        while opponent_board[hit_row][hit_column]== 'H' and hit_row!=0:
             hit_row-=1
         while  hit_row<board_size:
             hit_row+=1
-            if board[hit_row][hit_column]=='X' or board[hit_row][hit_column]=='0':
+            if opponent_board[hit_row][hit_column]== 'X' or opponent_board[hit_row][hit_column]== '0':
                 hit_row -= 1
                 break
-        while board[hit_row][hit_column]=='H' and hit_row>0:
-            board[hit_row][hit_column]='S'
+        while opponent_board[hit_row][hit_column]== 'H' and hit_row>0:
+            opponent_board[hit_row][hit_column]= 'S'
+            player_board[hit_row][hit_column] = 'S'
             hit_row-=1
-    elif board[hit_row][hit_column+1]=='H' or board[hit_row][hit_column-1]=='H':
-        while board[hit_row][hit_column]=='H' and hit_column!=0:
+    elif opponent_board[hit_row][hit_column + 1]== 'H' or opponent_board[hit_row][hit_column - 1]== 'H':
+        while opponent_board[hit_row][hit_column]== 'H' and hit_column!=0:
             hit_column-=1
         while  hit_column<board_size:
             hit_column+=1
-            if board[hit_row][hit_column]=='X' or board[hit_row][hit_column]=='0':
+            if opponent_board[hit_row][hit_column]== 'X' or opponent_board[hit_row][hit_column]== '0':
                 hit_column-=1
                 break
-        while board[hit_row][hit_column] == 'H' and hit_column >=0:
-            board[hit_row][hit_column]='S'
+        while opponent_board[hit_row][hit_column] == 'H' and hit_column >=0:
+            opponent_board[hit_row][hit_column]= 'S'
+            player_board[hit_row][hit_column] = 'S'
             hit_column-=1
     else:
-        board[hit_row][hit_column] = 'S'
+        opponent_board[hit_row][hit_column] = 'S'
+        player_board[hit_row][hit_column] = 'S'
 
 
-def shot(board):
+def shot(player_board,opponent_board,board_size):
     shot_coordinates = input("Give shot coordinates")
     shot_coordinates_row, shot_coordinates_column = translate_coordinates(shot_coordinates)
-    if board[shot_coordinates_row][shot_coordinates_column ]== 'X':
+    if opponent_board[shot_coordinates_row][shot_coordinates_column]== 'X':
         print("You  hit the ship\n")
-        board[shot_coordinates_row][shot_coordinates_column] = 'H'
-        check_sink(board,shot_coordinates_row,shot_coordinates_column,board_size)
+        player_board[shot_coordinates_row][shot_coordinates_column] = 'H'
+        opponent_board[shot_coordinates_row][shot_coordinates_column] = 'H'
+        check_sink(player_board,opponent_board, shot_coordinates_row, shot_coordinates_column, board_size)
     else:
         print('You miss')
-        board[shot_coordinates_row][shot_coordinates_column] = 'M'
+        player_board[shot_coordinates_row][shot_coordinates_column] = 'M'
+        opponent_board[shot_coordinates_row][shot_coordinates_column] = 'M'
+
+def battle(player1_board, player2_board, board_size, turn_limit):
+    player1_shoot=generate_board(board_size)
+    player2_shoot=generate_board(board_size)
+    turn_conut=0
+    while turn_conut<turn_limit:
+        print('Player_one turn\n')
+        print('Your sea')
+        print_board(player1_board)
+        print('Opponent sea')
+        print_board(player1_shoot)
+        shot(player1_shoot,player2_board,board_size)
+        if check_win(player2_board,board_size):
+            break
+        print('Player_two turn\n')
+        print('Your sea')
+        print_board(player2_board)
+        print('Opponent sea')
+        print_board(player2_shoot)
+        shot(player2_shoot, player1_board, board_size)
+        if check_win(player1_board,board_size):
+            break
+
 
 
 board_size = 5
-board = generate_board(board_size)
-print_board(board)
+player1_board = generate_board(board_size)
+player2_board = generate_board(board_size)
+turn_limit=5
+
 index_row, index_column = translate_coordinates("B1")
-board[index_row][index_column] = 'X'
+player2_board[index_row][index_column] = 'X'
 index_row, index_column = translate_coordinates("b2")
-board[index_row][index_column] = 'X'
+player1_board[index_row][index_column] = 'X'
 index_row, index_column = translate_coordinates("b3")
-board[index_row][index_column] = 'X'
-while check_win(board,board_size):
-    print_board(board)
-    shot(board)
-    print_board(board)
+player2_board[index_row][index_column] = 'X'
+
+battle(player1_board,player2_board,board_size,turn_limit)
