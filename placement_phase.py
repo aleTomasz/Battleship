@@ -14,7 +14,7 @@ def print_board(board):
     print(" " * (cell_width + 1), end="")
     # https://www.lihaoyi.com/post/BuildyourownCommandLinewithANSIescapecodes.html#colors
     # printing colors "{color code} text {reset code}"
-    [print(f'\u001b[1m\u001b[31m{i:^{cell_width}}\u001b[0m', end='') for i in range(1, 11)]
+    [print(f'\u001b[1m\u001b[31m{i:^{cell_width}}\u001b[0m', end='') for i in range(1, board_size_choice+1)]
     for i, row in enumerate(board):
         print()
         print(f'\u001b[1m\u001b[31m{string.ascii_uppercase[i]:^{cell_width}}|\u001b[0m', end="")

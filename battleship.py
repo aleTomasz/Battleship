@@ -82,7 +82,7 @@ def get_turn_limit():
     while True:
         turn_option_choice = input('Please share turn limit from 5 to 50: ')
         if turn_option_choice in turn_options:
-            return turn_option_choice
+            return int(turn_option_choice)
         else:
             print('Invalid input! (must be between 5-50)')
 
@@ -329,19 +329,20 @@ def play_game():
         turn_limit = get_turn_limit()
         board_choices = generate_board_choices(board_size_choice)
         ship_quantities = assigning_ship_types(board_size_choice)
-        ship_positions = ship_placement(board_size_choice, ship_quantities, player_one)
-        print(ship_positions)
-        print_board(convert_board(ship_positions,board_size_choice))
+
 
         player = player_one
         waiting_message(player)
-        ship_placement(board_size_choice, ship_quantities, player)
-
+        player_one_board=ship_placement(board_size_choice, ship_quantities, player)
+        converted_player_one_board=convert_board(player_one_board,board_size_choice)
         clear_console()
 
         player = player_two
         waiting_message(player)
         player_two_board = ship_placement(board_size_choice, ship_quantities, player)
+        converted_player_two_board=convert_board(player_two_board,board_size_choice)
+
+        battle(converted_player_one_board,converted_player_two_board,board_size_choice,turn_limit)
 
     else:
         pass
