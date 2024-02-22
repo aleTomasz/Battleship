@@ -9,12 +9,12 @@ def logo_read():
     logo = file.read()
     print(logo)
 
-def print_board(board):
+def print_board(board,board_size):
     cell_width = 5
     print(" " * (cell_width + 1), end="")
     # https://www.lihaoyi.com/post/BuildyourownCommandLinewithANSIescapecodes.html#colors
     # printing colors "{color code} text {reset code}"
-    [print(f'\u001b[1m\u001b[31m{i:^{cell_width}}\u001b[0m', end='') for i in range(1, 11)]
+    [print(f'\u001b[1m\u001b[31m{i:^{cell_width}}\u001b[0m', end='') for i in range(1, board_size+1)]
     for i, row in enumerate(board):
         print()
         print(f'\u001b[1m\u001b[31m{string.ascii_uppercase[i]:^{cell_width}}|\u001b[0m', end="")
@@ -99,7 +99,7 @@ def display_board(board_size_choice, player, ship_positions=None):
         for col_index in range(1, board_size_choice + 1):
             position = f"{row_letter}{col_index}"
             if position in ship_positions:
-                row_display.append(f'\u001b[1m\u001b[32m S \u001b[0m')
+                row_display.append(f'\u001b[1m\u001b[32m X \u001b[0m')
             else:
                 row_display.append(" 0 ")
         print(f"{row_letter} " + "".join(row_display) + " ||")
@@ -292,28 +292,37 @@ def shot(player_board,opponent_board,board_size):
         print('You miss')
         player_board[shot_coordinates_row][shot_coordinates_column] = 'M'
         opponent_board[shot_coordinates_row][shot_coordinates_column] = 'M'
+def changing_player(player_name):
+    input("Press Enter to change player")
+    clear_console()
+    input(f"{player_name} press Enter to continue game")
 
-def battle(player1_board, player2_board, board_size, turn_limit):
+def battle(player_one_name,player_two_name,player1_board, player2_board, board_size, turn_limit):
     player1_shoot=generate_board(board_size)
     player2_shoot=generate_board(board_size)
     turn_conut=0
     while turn_conut<turn_limit:
-        print('Player_one turn\n')
+        changing_player(player_one_name)
+        print(f'{player_one_name} turn\n')
         print('Your sea')
-        print_board(player1_board)
+        print_board(player1_board,board_size)
         print('Opponent sea')
-        print_board(player1_shoot)
+        print_board(player1_shoot,board_size)
         shot(player1_shoot,player2_board,board_size)
         if check_win(player2_board,board_size):
             break
-        print('Player_two turn\n')
+        changing_player(player_two_name)
+        print(f'{player_two_name} turn\n')
         print('Your sea')
-        print_board(player2_board)
+        print_board(player2_board,board_size)
         print('Opponent sea')
-        print_board(player2_shoot)
+        print_board(player2_shoot,board_size)
         shot(player2_shoot, player1_board, board_size)
         if check_win(player1_board,board_size):
             break
+        if turn_limit==turn_conut+1:
+            print("No one won, it's a draw")
+
 
 def play_game():
     logo_read()
@@ -342,7 +351,7 @@ def play_game():
         player_two_board = ship_placement(board_size_choice, ship_quantities, player)
         converted_player_two_board=convert_board(player_two_board,board_size_choice)
 
-        battle(converted_player_one_board,converted_player_two_board,board_size_choice,turn_limit)
+        battle(player_one,player_two,converted_player_one_board,converted_player_two_board,board_size_choice,turn_limit)
 
     else:
         pass
