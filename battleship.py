@@ -1,26 +1,32 @@
 import re
 import string
+
 free_tile_sign = '0'
+
+
 def generate_board(size):
     return [[free_tile_sign for i in range(size)] for i in range(size)]
+
 
 def logo_read():
     file = open('logo.txt', 'rt')
     logo = file.read()
     print(logo)
 
-def print_board(board,board_size):
+
+def print_board(board, board_size):
     cell_width = 5
     print(" " * (cell_width + 1), end="")
     # https://www.lihaoyi.com/post/BuildyourownCommandLinewithANSIescapecodes.html#colors
     # printing colors "{color code} text {reset code}"
-    [print(f'\u001b[1m\u001b[31m{i:^{cell_width}}\u001b[0m', end='') for i in range(1, board_size+1)]
+    [print(f'\u001b[1m\u001b[31m{i:^{cell_width}}\u001b[0m', end='') for i in range(1, board_size + 1)]
     for i, row in enumerate(board):
         print()
         print(f'\u001b[1m\u001b[31m{string.ascii_uppercase[i]:^{cell_width}}|\u001b[0m', end="")
         for cell in row:
             print(f'{cell:^{cell_width}}', end='')
     print()
+
 
 def translate_coordinates(coordinates: str):
     if 2 < len(coordinates) <= 3:
@@ -42,6 +48,7 @@ def translate_coordinates(coordinates: str):
     board_horizontal_index = int(horizontal_coordinate) - 1
 
     return board_vertical_index, board_horizontal_index
+
 
 def choose_game_mode():
     game_mode = ['1', '2']
@@ -159,12 +166,14 @@ def check_surroundings(position, ship_positions):
     return True
 
 
-def place_multi_masted_ship(board_choices, ship_length, ship_positions, board_size_choice):
+def place_multi_masted_ship(board_choices, ship_length, ship_positions, board_size_choice,player_board):
     while True:
         multi_ship_coordinates = []
         start_place = get_valid_input(board_choices, ship_positions)
         if ship_length == 1:
             if check_surroundings(start_place, ship_positions):
+                coordinates_row, coordinates_column = translate_coordinates(start_place)
+                player_board[coordinates_row][coordinates_column] = 'X'
                 return [start_place]
             else:
                 print("Ships are too close! Choose a different starting place.")
@@ -182,6 +191,8 @@ def place_multi_masted_ship(board_choices, ship_length, ship_positions, board_si
                 for i in range(ship_length):
                     new_position = start_place[0] + str(int(start_place[1]) + i)
                     multi_ship_coordinates.append(new_position)
+                    coordinates_row, coordinates_column = translate_coordinates(new_position)
+                    player_board[coordinates_row][coordinates_column]='X'
             elif direction == 'V':
                 if ord(start_place[0]) + ship_length - 1 > ord('A') + board_size_choice:
                     print("Ship doesn't fit in this direction. Choose a different starting place.")
@@ -190,6 +201,8 @@ def place_multi_masted_ship(board_choices, ship_length, ship_positions, board_si
                 for i in range(ord(start_place[0]), ord(end_row) + 1):
                     new_position = chr(i) + start_place[1]
                     multi_ship_coordinates.append(new_position)
+                    coordinates_row, coordinates_column = translate_coordinates(new_position)
+                    player_board[coordinates_row][coordinates_column]='X'
             elif direction == 'B':
                 continue
             else:
@@ -200,7 +213,7 @@ def place_multi_masted_ship(board_choices, ship_length, ship_positions, board_si
                 print("Ships are too close! Choose a different starting place.")
 
 
-def ship_placement(board_size_choice, ship_quantities, player):
+def ship_placement(board_size_choice, ship_quantities, player, player_board):
     board_choices = generate_board_choices(board_size_choice)
     ship_types_and_quantities = {'one-masted': ship_quantities['one-masted'],
                                  'two-masted': ship_quantities['two-masted'],
@@ -210,13 +223,16 @@ def ship_placement(board_size_choice, ship_quantities, player):
     for ship_type, ship_type_quantity in ship_types_and_quantities.items().__reversed__():
         while ship_type_quantity > 0:
             for _ in range(ship_type_quantity):
-                display_board(board_size_choice, player, ship_positions)
+                #display_board(board_size_choice, player, ship_positions)
+                print_board(player_board,board_size_choice)
                 print(f'Remaining {ship_type} ship(s) to allocate: {ship_type_quantity}')
                 ship_length = determining_ship_length(ship_type)
                 ship_positions.extend(place_multi_masted_ship(board_choices, ship_length, ship_positions,
-                                                              board_size_choice))
+                                                              board_size_choice,player_board))
                 ship_type_quantity -= 1
-    display_board(board_size_choice, player, ship_positions)
+   # display_board(board_size_choice, player, ship_positions)
+    print_board(player_board,board_size_choice)
+
     print(f'\nAll ships placed for {player}.')
     return ship_positions
 
@@ -233,94 +249,101 @@ def waiting_message(player):
 def clear_console():
     print('\n' * 100)
 
-def convert_board(ship_positions,board_size_choice):
-    board=generate_board(board_size_choice)
+
+def convert_board(ship_positions, board_size_choice):
+    board = generate_board(board_size_choice)
     for position in ship_positions:
         index_row, index_column = translate_coordinates(position)
-        board[index_row][index_column]='X'
+        board[index_row][index_column] = 'X'
     return board
 
-def check_win(board,board_size):
+
+def check_win(board, board_size):
     for i in range(board_size):
         for j in range(board_size):
-            if board[i][j]=='X':
+            if board[i][j] == 'X':
                 return 0
     print("You win")
     return 1
 
-def check_sink(player_board,opponent_board, hit_row, hit_column, board_size):
-    if opponent_board[hit_row + 1][hit_column]== 'X' or opponent_board[hit_row - 1][hit_column]== 'X' or opponent_board[hit_row][hit_column + 1]== 'X' or opponent_board[hit_row][hit_column - 1]== 'X':
+
+def check_sink(player_board, opponent_board, hit_row, hit_column, board_size):
+    if opponent_board[hit_row + 1][hit_column] == 'X' or opponent_board[hit_row - 1][hit_column] == 'X' or \
+            opponent_board[hit_row][hit_column + 1] == 'X' or opponent_board[hit_row][hit_column - 1] == 'X':
         return
-    if opponent_board[hit_row + 1][hit_column]== 'H' or opponent_board[hit_row - 1][hit_column]== 'H' :
-        while opponent_board[hit_row][hit_column]== 'H' and hit_row!=0:
-            hit_row-=1
-        while  hit_row<board_size:
-            hit_row+=1
-            if opponent_board[hit_row][hit_column]== 'X' or opponent_board[hit_row][hit_column]== '0':
+    if opponent_board[hit_row + 1][hit_column] == 'H' or opponent_board[hit_row - 1][hit_column] == 'H':
+        while opponent_board[hit_row][hit_column] == 'H' and hit_row != 0:
+            hit_row -= 1
+        while hit_row < board_size:
+            hit_row += 1
+            if opponent_board[hit_row][hit_column] == 'X' or opponent_board[hit_row][hit_column] == '0':
                 hit_row -= 1
                 break
-        while opponent_board[hit_row][hit_column]== 'H' and hit_row>0:
-            opponent_board[hit_row][hit_column]= 'S'
+        while opponent_board[hit_row][hit_column] == 'H' and hit_row > 0:
+            opponent_board[hit_row][hit_column] = 'S'
             player_board[hit_row][hit_column] = 'S'
-            hit_row-=1
-    elif opponent_board[hit_row][hit_column + 1]== 'H' or opponent_board[hit_row][hit_column - 1]== 'H':
-        while opponent_board[hit_row][hit_column]== 'H' and hit_column!=0:
-            hit_column-=1
-        while  hit_column<board_size:
-            hit_column+=1
-            if opponent_board[hit_row][hit_column]== 'X' or opponent_board[hit_row][hit_column]== '0':
-                hit_column-=1
+            hit_row -= 1
+    elif opponent_board[hit_row][hit_column + 1] == 'H' or opponent_board[hit_row][hit_column - 1] == 'H':
+        while opponent_board[hit_row][hit_column] == 'H' and hit_column != 0:
+            hit_column -= 1
+        while hit_column < board_size:
+            hit_column += 1
+            if opponent_board[hit_row][hit_column] == 'X' or opponent_board[hit_row][hit_column] == '0':
+                hit_column -= 1
                 break
-        while opponent_board[hit_row][hit_column] == 'H' and hit_column >=0:
-            opponent_board[hit_row][hit_column]= 'S'
+        while opponent_board[hit_row][hit_column] == 'H' and hit_column >= 0:
+            opponent_board[hit_row][hit_column] = 'S'
             player_board[hit_row][hit_column] = 'S'
-            hit_column-=1
+            hit_column -= 1
     else:
         opponent_board[hit_row][hit_column] = 'S'
         player_board[hit_row][hit_column] = 'S'
 
 
-def shot(player_board,opponent_board,board_size):
+def shot(player_board, opponent_board, board_size):
     shot_coordinates = input("Give shot coordinates")
     shot_coordinates_row, shot_coordinates_column = translate_coordinates(shot_coordinates)
-    if opponent_board[shot_coordinates_row][shot_coordinates_column]== 'X':
+    if opponent_board[shot_coordinates_row][shot_coordinates_column] == 'X':
         print("You  hit the ship\n")
         player_board[shot_coordinates_row][shot_coordinates_column] = 'H'
         opponent_board[shot_coordinates_row][shot_coordinates_column] = 'H'
-        check_sink(player_board,opponent_board, shot_coordinates_row, shot_coordinates_column, board_size)
+        check_sink(player_board, opponent_board, shot_coordinates_row, shot_coordinates_column, board_size)
     else:
         print('You miss')
         player_board[shot_coordinates_row][shot_coordinates_column] = 'M'
         opponent_board[shot_coordinates_row][shot_coordinates_column] = 'M'
+
+
 def changing_player(player_name):
     input("Press Enter to change player")
     clear_console()
     input(f"{player_name} press Enter to continue game")
 
-def battle(player_one_name,player_two_name,player1_board, player2_board, board_size, turn_limit):
-    player1_shoot=generate_board(board_size)
-    player2_shoot=generate_board(board_size)
-    turn_conut=0
-    while turn_conut<turn_limit:
+
+def battle(player_one_name, player_two_name, player1_board, player2_board, board_size, turn_limit):
+    player1_shoot = generate_board(board_size)
+    player2_shoot = generate_board(board_size)
+    turn_conut = 0
+    while turn_conut < turn_limit:
         changing_player(player_one_name)
         print(f'{player_one_name} turn\n')
         print('Your sea')
-        print_board(player1_board,board_size)
+        print_board(player1_board, board_size)
         print('Opponent sea')
-        print_board(player1_shoot,board_size)
-        shot(player1_shoot,player2_board,board_size)
-        if check_win(player2_board,board_size):
+        print_board(player1_shoot, board_size)
+        shot(player1_shoot, player2_board, board_size)
+        if check_win(player2_board, board_size):
             break
         changing_player(player_two_name)
         print(f'{player_two_name} turn\n')
         print('Your sea')
-        print_board(player2_board,board_size)
+        print_board(player2_board, board_size)
         print('Opponent sea')
-        print_board(player2_shoot,board_size)
+        print_board(player2_shoot, board_size)
         shot(player2_shoot, player1_board, board_size)
-        if check_win(player1_board,board_size):
+        if check_win(player1_board, board_size):
             break
-        if turn_limit==turn_conut+1:
+        if turn_limit == turn_conut + 1:
             print("No one won, it's a draw")
 
 
@@ -339,19 +362,21 @@ def play_game():
         board_choices = generate_board_choices(board_size_choice)
         ship_quantities = assigning_ship_types(board_size_choice)
 
-
         player = player_one
         waiting_message(player)
-        player_one_board=ship_placement(board_size_choice, ship_quantities, player)
-        converted_player_one_board=convert_board(player_one_board,board_size_choice)
+        player_one_board=generate_board(board_size_choice)
+        ship_placement(board_size_choice, ship_quantities, player,player_one_board)
+       # converted_player_one_board = convert_board(player_one_board, board_size_choice)
         clear_console()
 
         player = player_two
         waiting_message(player)
-        player_two_board = ship_placement(board_size_choice, ship_quantities, player)
-        converted_player_two_board=convert_board(player_two_board,board_size_choice)
+        player_two_board=generate_board(board_size_choice)
+        ship_placement(board_size_choice, ship_quantities, player,player_two_board)
+        #converted_player_two_board = convert_board(player_two_board, board_size_choice)
 
-        battle(player_one,player_two,converted_player_one_board,converted_player_two_board,board_size_choice,turn_limit)
+        battle(player_one, player_two, player_one_board, player_two_board, board_size_choice,
+               turn_limit)
 
     else:
         pass
