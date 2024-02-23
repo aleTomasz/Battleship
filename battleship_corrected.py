@@ -353,12 +353,6 @@ def battle(player_one_name, player_two_name, player1_board, player2_board, board
             print("No one won, it's a draw")
 
 
-def generate_computer_shot(board_size):
-    row = random.choice(range(board_size))
-    col = random.choice(range(board_size))
-    return row, col
-
-
 def play_game():
     logo_read()
     print('Welcome to Battleship!')
