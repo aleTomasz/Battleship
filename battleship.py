@@ -361,6 +361,8 @@ def battle(player_one_name, player_two_name, player1_board, player2_board, board
 def play_game():
     logo_read()
     #game_mode_selection = choose_game_mode()
+    print('Welcome to Battleship!')
+    print('Game Mode is Multiplayer')
 
     used_names = []
     player_one = get_name('First', used_names)
