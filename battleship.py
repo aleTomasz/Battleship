@@ -360,36 +360,33 @@ def battle(player_one_name, player_two_name, player1_board, player2_board, board
 
 def play_game():
     logo_read()
-    game_mode_selection = choose_game_mode()
+    #game_mode_selection = choose_game_mode()
 
-    if game_mode_selection == '2':
-        used_names = []
-        player_one = get_name('First', used_names)
-        used_names.append(player_one)
-        player_two = get_name('Second', used_names)
+    used_names = []
+    player_one = get_name('First', used_names)
+    used_names.append(player_one)
+    player_two = get_name('Second', used_names)
 
-        board_size_choice = get_board_size()
-        turn_limit = get_turn_limit()
-        board_choices = generate_board_choices(board_size_choice)
-        ship_quantities = assigning_ship_types(board_size_choice)
+    board_size_choice = get_board_size()
+    turn_limit = get_turn_limit()
+    board_choices = generate_board_choices(board_size_choice)
+    ship_quantities = assigning_ship_types(board_size_choice)
 
-        player = player_one
-        waiting_message(player)
-        player_one_board = generate_board(board_size_choice)
-        ship_placement(board_size_choice, ship_quantities, player, player_one_board)
+    player = player_one
+    waiting_message(player)
+    player_one_board = generate_board(board_size_choice)
+    ship_placement(board_size_choice, ship_quantities, player, player_one_board)
 
-        clear_console()
+    clear_console()
 
-        player = player_two
-        waiting_message(player)
-        player_two_board = generate_board(board_size_choice)
-        ship_placement(board_size_choice, ship_quantities, player, player_two_board)
+    player = player_two
+    waiting_message(player)
+    player_two_board = generate_board(board_size_choice)
+    ship_placement(board_size_choice, ship_quantities, player, player_two_board)
 
-        battle(player_one, player_two, player_one_board, player_two_board, board_size_choice,
-               turn_limit)
+    battle(player_one, player_two, player_one_board, player_two_board, board_size_choice,turn_limit)
 
-    else:
-        pass
+
 
 
 play_game()
