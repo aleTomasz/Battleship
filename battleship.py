@@ -17,8 +17,7 @@ def logo_read():
 def print_board(board, board_size):
     cell_width = 5
     print(" " * (cell_width + 1), end="")
-    # https://www.lihaoyi.com/post/BuildyourownCommandLinewithANSIescapecodes.html#colors
-    # printing colors "{color code} text {reset code}"
+
     [print(f'\u001b[1m\u001b[31m{i:^{cell_width}}\u001b[0m', end='') for i in range(1, board_size + 1)]
     for i, row in enumerate(board):
         print()
@@ -38,7 +37,6 @@ def translate_coordinates(coordinates: str):
     if not coordinates[1:].isdigit():
         raise Exception("Invalid coordinates - should have digit on second and third place")
 
-    # same as 3 ifs above, but shorter using regular expression
     if not re.match(r"^[A-Za-z]{1}[0-9]{1,2}$", coordinates):
         raise Exception("Regular expression check if coordinates are valid - FAIL")
 
@@ -166,7 +164,7 @@ def check_surroundings(position, ship_positions):
     return True
 
 
-def place_multi_masted_ship(board_choices, ship_length, ship_positions, board_size_choice,player_board):
+def place_multi_masted_ship(board_choices, ship_length, ship_positions, board_size_choice, player_board):
     while True:
         multi_ship_coordinates = []
         start_place = get_valid_input(board_choices, ship_positions)
@@ -192,7 +190,7 @@ def place_multi_masted_ship(board_choices, ship_length, ship_positions, board_si
                     new_position = start_place[0] + str(int(start_place[1]) + i)
                     multi_ship_coordinates.append(new_position)
                     coordinates_row, coordinates_column = translate_coordinates(new_position)
-                    player_board[coordinates_row][coordinates_column]='X'
+                    player_board[coordinates_row][coordinates_column] = 'X'
             elif direction == 'V':
                 if ord(start_place[0]) + ship_length - 1 > ord('A') + board_size_choice:
                     print("Ship doesn't fit in this direction. Choose a different starting place.")
@@ -202,7 +200,7 @@ def place_multi_masted_ship(board_choices, ship_length, ship_positions, board_si
                     new_position = chr(i) + start_place[1]
                     multi_ship_coordinates.append(new_position)
                     coordinates_row, coordinates_column = translate_coordinates(new_position)
-                    player_board[coordinates_row][coordinates_column]='X'
+                    player_board[coordinates_row][coordinates_column] = 'X'
             elif direction == 'B':
                 continue
             else:
@@ -223,15 +221,15 @@ def ship_placement(board_size_choice, ship_quantities, player, player_board):
     for ship_type, ship_type_quantity in ship_types_and_quantities.items().__reversed__():
         while ship_type_quantity > 0:
             for _ in range(ship_type_quantity):
-                #display_board(board_size_choice, player, ship_positions)
-                print_board(player_board,board_size_choice)
+                # display_board(board_size_choice, player, ship_positions)
+                print_board(player_board, board_size_choice)
                 print(f'Remaining {ship_type} ship(s) to allocate: {ship_type_quantity}')
                 ship_length = determining_ship_length(ship_type)
                 ship_positions.extend(place_multi_masted_ship(board_choices, ship_length, ship_positions,
-                                                              board_size_choice,player_board))
+                                                              board_size_choice, player_board))
                 ship_type_quantity -= 1
-   # display_board(board_size_choice, player, ship_positions)
-    print_board(player_board,board_size_choice)
+
+    print_board(player_board, board_size_choice)
 
     print(f'\nAll ships placed for {player}.')
     return ship_positions
@@ -268,10 +266,13 @@ def check_win(board, board_size):
 
 
 def check_sink(player_board, opponent_board, hit_row, hit_column, board_size):
-    if opponent_board[hit_row + 1][hit_column] == 'X' or opponent_board[hit_row - 1][hit_column] == 'X' or \
-            opponent_board[hit_row][hit_column + 1] == 'X' or opponent_board[hit_row][hit_column - 1] == 'X':
+    if hit_row + 1 < board_size and opponent_board[hit_row + 1][hit_column] == 'X' or hit_row - 1 >= 0 and \
+            opponent_board[hit_row - 1][hit_column] == 'X' or \
+            hit_column + 1 < board_size and opponent_board[hit_row][hit_column + 1] == 'X' or hit_column - 1 >= 0 and \
+            opponent_board[hit_row][hit_column - 1] == 'X':
         return
-    if opponent_board[hit_row + 1][hit_column] == 'H' or opponent_board[hit_row - 1][hit_column] == 'H':
+    if hit_row + 1 < board_size and opponent_board[hit_row + 1][hit_column] == 'H' or hit_row - 1 >= 0 and \
+            opponent_board[hit_row - 1][hit_column] == 'H':
         while opponent_board[hit_row][hit_column] == 'H' and hit_row != 0:
             hit_row -= 1
         while hit_row < board_size:
@@ -283,7 +284,8 @@ def check_sink(player_board, opponent_board, hit_row, hit_column, board_size):
             opponent_board[hit_row][hit_column] = 'S'
             player_board[hit_row][hit_column] = 'S'
             hit_row -= 1
-    elif opponent_board[hit_row][hit_column + 1] == 'H' or opponent_board[hit_row][hit_column - 1] == 'H':
+    elif hit_column + 1 < board_size and opponent_board[hit_row][hit_column + 1] == 'H' or hit_column - 1 >= 0 and \
+            opponent_board[hit_row][hit_column - 1] == 'H':
         while opponent_board[hit_row][hit_column] == 'H' and hit_column != 0:
             hit_column -= 1
         while hit_column < board_size:
@@ -300,9 +302,18 @@ def check_sink(player_board, opponent_board, hit_row, hit_column, board_size):
         player_board[hit_row][hit_column] = 'S'
 
 
+def check_coordinates(board_size):
+    while True:
+        shot_coordinates = input("Give shot coordinates")
+        coordinates_row, coordinates_column = translate_coordinates(shot_coordinates)
+        if coordinates_row > board_size - 1 or coordinates_row < 0 or coordinates_column > board_size - 1 or coordinates_column < 0:
+            print('Wrong coordinates, give the right one')
+        else:
+            return coordinates_row, coordinates_column
+
+
 def shot(player_board, opponent_board, board_size):
-    shot_coordinates = input("Give shot coordinates")
-    shot_coordinates_row, shot_coordinates_column = translate_coordinates(shot_coordinates)
+    shot_coordinates_row, shot_coordinates_column = check_coordinates(board_size)
     if opponent_board[shot_coordinates_row][shot_coordinates_column] == 'X':
         print("You  hit the ship\n")
         player_board[shot_coordinates_row][shot_coordinates_column] = 'H'
@@ -364,16 +375,15 @@ def play_game():
 
         player = player_one
         waiting_message(player)
-        player_one_board=generate_board(board_size_choice)
-        ship_placement(board_size_choice, ship_quantities, player,player_one_board)
-       # converted_player_one_board = convert_board(player_one_board, board_size_choice)
+        player_one_board = generate_board(board_size_choice)
+        ship_placement(board_size_choice, ship_quantities, player, player_one_board)
+
         clear_console()
 
         player = player_two
         waiting_message(player)
-        player_two_board=generate_board(board_size_choice)
-        ship_placement(board_size_choice, ship_quantities, player,player_two_board)
-        #converted_player_two_board = convert_board(player_two_board, board_size_choice)
+        player_two_board = generate_board(board_size_choice)
+        ship_placement(board_size_choice, ship_quantities, player, player_two_board)
 
         battle(player_one, player_two, player_one_board, player_two_board, board_size_choice,
                turn_limit)
