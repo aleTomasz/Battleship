@@ -357,7 +357,7 @@ def battle(player_one_name, player_two_name, player1_board, player2_board, board
         if check_win(player1_board, board_size):
             break
         turn_conut+=1
-        if turn_limit == turn_conut + 1:
+        if turn_limit == turn_conut :
             print("No one won, it's a draw")
             break
 
