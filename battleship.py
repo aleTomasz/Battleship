@@ -192,7 +192,7 @@ def place_multi_masted_ship(board_choices, ship_length, ship_positions, board_si
                     coordinates_row, coordinates_column = translate_coordinates(new_position)
                     player_board[coordinates_row][coordinates_column] = 'X'
             elif direction == 'V':
-                if ord(start_place[0]) + ship_length - 1 > ord('A') + board_size_choice:
+                if ord(start_place[0]) + ship_length > ord('A') + board_size_choice:
                     print("Ship doesn't fit in this direction. Choose a different starting place.")
                     continue
                 end_row = chr(ord(start_place[0]) + ship_length - 1)
