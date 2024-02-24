@@ -183,7 +183,7 @@ def place_multi_masted_ship(board_choices, ship_length, ship_positions, board_si
         else:
             direction = input("Enter direction (H for horizontal, V for vertical, B to go back): ").upper()
             if direction == 'H':
-                if int(start_place[1]) + ship_length > board_size_choice:
+                if int(start_place[1]) + ship_length > board_size_choice+1:
                     print("Ship doesn't fit in this direction. Choose a different starting place.")
                     continue
                 for i in range(ship_length):
