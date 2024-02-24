@@ -338,6 +338,7 @@ def battle(player_one_name, player_two_name, player1_board, player2_board, board
     while turn_conut < turn_limit:
         changing_player(player_one_name)
         print(f'{player_one_name} turn\n')
+        print(f'Remaining turns left: {turn_limit-turn_conut}')
         print('Your sea')
         print_board(player1_board, board_size)
         print('Opponent sea')
@@ -347,6 +348,7 @@ def battle(player_one_name, player_two_name, player1_board, player2_board, board
             break
         changing_player(player_two_name)
         print(f'{player_two_name} turn\n')
+        print(f'Remaining turns left: {turn_limit - turn_conut}')
         print('Your sea')
         print_board(player2_board, board_size)
         print('Opponent sea')
